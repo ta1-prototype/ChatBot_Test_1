@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StudyBoost AI Pro - 高校生のためのハイエンドAI学習パートナー</title>
+    <!-- Console Warning Suppression for CDN/Babel in Browser -->
+    <script>
+        // Babel Standalone & Tailwind CDN Development Warnings Suppression
+        window.babelTransformOptions = { disableWarning: true };
+        const originalWarn = console.warn;
+        console.warn = function (...args) {
+            if (
+                typeof args[0] === 'string' && 
+                (args[0].includes('in-browser Babel transformer') || args[0].includes('cdn.tailwindcss.com'))
+            ) {
+                return;
+            }
+            originalWarn.apply(console, args);
+        };
+    </script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -442,6 +457,12 @@
             lucide.createIcons();
         });
 
+        // Safe setup for window load as backup
+        window.addEventListener('load', () => {
+            setupEventListeners();
+            lucide.createIcons();
+        });
+
         function renderSubjectBadges() {
             const container = document.getElementById('subjectGrid');
             if (!container) return;
@@ -674,6 +695,13 @@
         async function handleSendMessage(userText) {
             const sendBtn = document.getElementById('sendBtn');
 
+            if (!apiKey) {
+                const modal = document.getElementById('apiKeyModal');
+                if (modal) modal.classList.remove('hidden');
+                alert('Gemini APIキーを入力してください（右上の「APIキー設定」からも登録できます）。');
+                return;
+            }
+
             appendMessageUI('user', userText);
             chatHistory.push({ role: 'user', parts: [{ text: userText }] });
 
@@ -694,7 +722,7 @@
 
             } catch (err) {
                 loadingBubble.remove();
-                appendMessageUI('model', `⚠️ Error: ${err.message}`);
+                appendMessageUI('model', `⚠️ エラーが発生しました: ${err.message}`);
             } finally {
                 if (sendBtn) sendBtn.disabled = false;
             }
