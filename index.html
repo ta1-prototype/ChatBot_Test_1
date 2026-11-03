@@ -336,15 +336,51 @@
 
     <!-- Frontend Script Logic -->
     <script type="text/babel" data-presets="typescript">
-        const SUBJECTS = [
-            { id: '物理', name: '物理', icon: 'atom' },
-            { id: '数学', name: '数学', icon: 'calculator' },
-            { id: '化学', name: '化学', icon: 'flask-conical' },
-            { id: '生物', name: '生物', icon: 'dna' },
-            { id: '英語', name: '英語', icon: 'languages' },
-            { id: '古典', name: '古典', icon: 'scroll' },
-            { id: '現代文', name: '現代文', icon: 'book-open' },
-            { id: '社会', name: '社会', icon: 'globe' },
+        // 高校の新学習指導要領カリキュラムに沿った詳細科目リスト
+        const SUBJECT_CATEGORIES = [
+            {
+                category: '理科',
+                subjects: [
+                    { id: '物理基礎', name: '物理基礎', icon: 'atom' },
+                    { id: '物理', name: '物理', icon: 'atom' },
+                    { id: '化学基礎', name: '化学基礎', icon: 'flask-conical' },
+                    { id: '化学', name: '化学', icon: 'flask-conical' },
+                    { id: '生物基礎', name: '生物基礎', icon: 'dna' },
+                    { id: '生物', name: '生物', icon: 'dna' },
+                    { id: '地学基礎', name: '地学基礎', icon: 'mountain' },
+                    { id: '地学', name: '地学', icon: 'mountain' },
+                ]
+            },
+            {
+                category: '数学',
+                subjects: [
+                    { id: '数学I・A', name: '数学I・A', icon: 'calculator' },
+                    { id: '数学II・B', name: '数学II・B', icon: 'calculator' },
+                    { id: '数学III・C', name: '数学III・C', icon: 'calculator' },
+                ]
+            },
+            {
+                category: '外国語',
+                subjects: [
+                    { id: '英語コミュニケーション', name: '英語', icon: 'languages' },
+                ]
+            },
+            {
+                category: '国語',
+                subjects: [
+                    { id: '現代文', name: '現代文', icon: 'book-open' },
+                    { id: '言語文化・古典', name: '古典', icon: 'scroll' },
+                ]
+            },
+            {
+                category: '地歴公民',
+                subjects: [
+                    { id: '歴史総合・日本史', name: '日本史', icon: 'landmark' },
+                    { id: '歴史総合・世界史', name: '世界史', icon: 'globe-2' },
+                    { id: '地理総合・探究', name: '地理', icon: 'map' },
+                    { id: '公共・政治経済', name: '公共・政経', icon: 'scale' },
+                ]
+            }
         ];
 
         let chatHistory = [];
@@ -365,19 +401,30 @@
         function renderSubjectBadges() {
             const container = document.getElementById('subjectGrid');
             if (!container) return;
-            container.innerHTML = SUBJECTS.map(subj => {
-                const isSelected = subj.id === selectedSubject;
-                const activeStyle = isSelected 
-                    ? 'ring-2 ring-indigo-500 bg-indigo-600/30 text-white font-extrabold border-indigo-400' 
-                    : 'bg-slate-900/40 text-slate-400 border-white/5 hover:border-white/20';
 
-                return `
-                    <button type="button" data-subject="${subj.id}" class="subject-btn flex flex-col items-center justify-center p-2.5 rounded-xl border ${activeStyle} transition-all duration-200 text-xs">
-                        <i data-lucide="${subj.icon}" class="w-4 h-4 mb-1 text-slate-300"></i>
-                        <span>${subj.name}</span>
-                    </button>
+            let html = '';
+            SUBJECT_CATEGORIES.forEach(cat => {
+                html += `
+                    <div class="col-span-full mt-2 first:mt-0">
+                        <span class="text-[10px] font-bold text-indigo-400 tracking-wider uppercase">${cat.category}</span>
+                    </div>
                 `;
-            }).join('');
+                cat.subjects.forEach(subj => {
+                    const isSelected = subj.id === selectedSubject;
+                    const activeStyle = isSelected 
+                        ? 'ring-2 ring-indigo-500 bg-indigo-600/40 text-white font-extrabold border-indigo-400 shadow-md shadow-indigo-500/20' 
+                        : 'bg-slate-900/40 text-slate-400 border-white/5 hover:border-white/20 hover:text-slate-200';
+
+                    html += `
+                        <button type="button" data-subject="${subj.id}" class="subject-btn flex flex-col items-center justify-center p-2 rounded-xl border ${activeStyle} transition-all duration-200 text-xs">
+                            <i data-lucide="${subj.icon}" class="w-3.5 h-3.5 mb-1 ${isSelected ? 'text-indigo-300' : 'text-slate-400'}"></i>
+                            <span class="text-[11px] leading-tight truncate w-full text-center">${subj.name}</span>
+                        </button>
+                    `;
+                });
+            });
+
+            container.innerHTML = html;
 
             document.querySelectorAll('.subject-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
@@ -687,4 +734,3 @@
         }
     </script>
 </body>
-</html>
