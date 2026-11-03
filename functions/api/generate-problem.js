@@ -19,11 +19,11 @@ export async function onRequestPost(context) {
             }]
         };
 
-        // 一時的な混雑に対応するためのリトライ処理（最大3回）
+        // 一時的な混雑に対応するための強固なリトライ処理（最大5回）
         let response;
         let data;
         let attempts = 0;
-        const maxAttempts = 3;
+        const maxAttempts = 5;
 
         while (attempts < maxAttempts) {
             attempts++;
@@ -40,7 +40,7 @@ export async function onRequestPost(context) {
                 break;
             }
 
-            // 混雑エラーの場合は1.5〜3秒待機して再試行
+            // 混雑エラーの場合は段階的に待機時間を延ばして再試行 (1.5s, 3s, 4.5s, 6s)
             if (attempts < maxAttempts) {
                 await new Promise(resolve => setTimeout(resolve, attempts * 1500));
             }
