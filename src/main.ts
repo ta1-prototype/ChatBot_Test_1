@@ -1,4 +1,3 @@
-
 import "./style.css";
 
 type Message = {
@@ -47,8 +46,7 @@ function render() {
     title.textContent = "何でも聞いてください。";
 
     const description = document.createElement("p");
-    description.textContent =
-      "あなたの思考をサポートするAIアシスタントです。";
+    description.textContent = "あなたの思考をサポートするAIアシスタントです。";
 
     const suggestions = document.createElement("div");
     suggestions.className = "suggestions";
@@ -59,6 +57,7 @@ function render() {
       "今日のタスクを整理したい"
     ].forEach((text) => {
       const button = document.createElement("button");
+      button.type = "button";
       button.className = "suggestion";
       button.textContent = text;
       button.addEventListener("click", () => {
@@ -75,14 +74,13 @@ function render() {
 
   for (const message of displayMessages) {
     const element = document.createElement("div");
-    element.className =
-      `message ${message.role === "user" ? "user" : "assistant"}`;
+    element.className = `message ${message.role === "user" ? "user" : "assistant"}`;
 
     if (message.role === "model") {
-      const role = document.createElement("div");
-      role.className = "message-role";
-      role.textContent = "✦ GEMINI";
-      element.append(role);
+      const header = document.createElement("div");
+      header.className = "message-header";
+      header.textContent = "✦ GEMINI";
+      element.append(header);
     }
 
     const content = document.createElement("div");
@@ -108,7 +106,6 @@ function setBusy(value: boolean) {
   busy = value;
   sendButton.disabled = value;
   input.disabled = value;
-  sendButton.textContent = value ? "…" : "↑";
 }
 
 function showError(message: string) {
@@ -121,22 +118,22 @@ async function sendMessage(text: string) {
   showError("");
   addMessage("user", text);
 
-  const userMessage: Message = {
-    role: "user",
-    text
-  };
-
-  // API送信中も画面上の表示は維持する
-  const nextContext = [...context, userMessage];
-
   input.value = "";
   input.style.height = "auto";
-
   setBusy(true);
 
+  // 思考中メッセージ（アニメーション付き）
   const thinking = document.createElement("div");
   thinking.className = "message assistant";
-  thinking.textContent = "✦ Geminiが考えています...";
+  thinking.innerHTML = `
+    <div class="message-header">✦ GEMINI</div>
+    <div class="thinking-bubble">
+      <span>Geminiが考えています</span>
+      <div class="typing-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  `;
   messagesElement.append(thinking);
   scrollBottom();
 
@@ -147,14 +144,13 @@ async function sendMessage(text: string) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-  	message: text,
-  	summary,
-  	history: context
-	})
+        message: text,
+        summary,
+        history: context
+      })
     });
 
-    const data = await response.json() as
-      Partial<ChatResponse> & { error?: string };
+    const data = (await response.json()) as Partial<ChatResponse> & { error?: string };
 
     if (!response.ok) {
       throw new Error(data.error || "API通信に失敗しました。");
@@ -164,7 +160,6 @@ async function sendMessage(text: string) {
       throw new Error("APIから不正な応答が返されました。");
     }
 
-    // 要約された記憶を次回以降に引き継ぐ
     summary = data.summary || "";
     context = data.context;
 
@@ -175,14 +170,9 @@ async function sendMessage(text: string) {
     });
 
     render();
-
   } catch (error) {
-    // 失敗したユーザーメッセージは表示に残す
-    // 記憶コンテキストには確定追加しない
     showError(
-      error instanceof Error
-        ? error.message
-        : "予期しないエラーが発生しました。"
+      error instanceof Error ? error.message : "予期しないエラーが発生しました。"
     );
     render();
   } finally {
@@ -205,8 +195,7 @@ input.addEventListener("keydown", (event) => {
 
 input.addEventListener("input", () => {
   input.style.height = "auto";
-  input.style.height =
-    `${Math.min(input.scrollHeight, 180)}px`;
+  input.style.height = `${Math.min(input.scrollHeight, 180)}px`;
 });
 
 document.querySelector("#new-chat")?.addEventListener("click", () => {
@@ -223,7 +212,6 @@ document.querySelector("#new-chat")?.addEventListener("click", () => {
 
 document.querySelector("#clear-chat")?.addEventListener("click", () => {
   if (busy) return;
-
   if (!confirm("現在の会話をすべて削除しますか？")) return;
 
   displayMessages = [];
