@@ -390,29 +390,8 @@
 
     <!-- TypeScript logic via Babel with TypeScript preset -->
     <script type="text/babel" data-presets="typescript">
-        // Interfaces
-        interface ChatPart {
-            text?: string;
-            inlineData?: {
-                mimeType: string;
-                data: string;
-            };
-        }
-
-        interface ChatMessage {
-            role: 'user' | 'model';
-            parts: ChatPart[];
-        }
-
-        interface SubjectOption {
-            id: string;
-            name: string;
-            icon: string;
-            color: string;
-        }
-
         // Subject Definitions
-        const SUBJECTS: SubjectOption[] = [
+        const SUBJECTS = [
             { id: '物理', name: '物理', icon: 'atom', color: 'indigo' },
             { id: '数学', name: '数学', icon: 'calculator', color: 'blue' },
             { id: '化学', name: '化学', icon: 'flask-conical', color: 'emerald' },
@@ -424,10 +403,10 @@
         ];
 
         // Global State
-        let apiKey: string = localStorage.getItem('GEMINI_API_KEY') || '';
-        let chatHistory: ChatMessage[] = [];
-        let selectedSubject: string = '物理';
-        let selectedBase64Image: { mimeType: string; data: string } | null = null;
+        let apiKey = localStorage.getItem('GEMINI_API_KEY') || '';
+        let chatHistory = [];
+        let selectedSubject = '物理';
+        let selectedBase64Image = null;
 
         const SYSTEM_INSTRUCTION_CHAT = `
 あなたは熱心で優しく褒め上手な、現役トップ講師クラスの高校生専用AI学習チューターです。
@@ -482,7 +461,7 @@
 
             document.querySelectorAll('.subject-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    const target = (e.currentTarget as HTMLElement).getAttribute('data-subject');
+                    const target = e.currentTarget.getAttribute('data-subject');
                     if (target) {
                         selectedSubject = target;
                         const badgeNode = document.getElementById('selectedSubjectBadge');
@@ -510,14 +489,14 @@
 
         function setupEventListeners() {
             // Modal Events
-            const modal = document.getElementById('apiKeyModal') as HTMLElement;
+            const modal = document.getElementById('apiKeyModal');
             const apiKeyBtn = document.getElementById('apiKeyBtn');
             const closeModalBtn = document.getElementById('closeModalBtn');
             const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
 
             if (apiKeyBtn && modal) {
                 apiKeyBtn.addEventListener('click', () => {
-                    (document.getElementById('apiKeyInput') as HTMLInputElement).value = apiKey;
+                    document.getElementById('apiKeyInput').value = apiKey;
                     modal.classList.remove('hidden');
                 });
             }
@@ -526,7 +505,7 @@
             }
             if (saveApiKeyBtn && modal) {
                 saveApiKeyBtn.addEventListener('click', () => {
-                    const val = (document.getElementById('apiKeyInput') as HTMLInputElement).value.trim();
+                    const val = document.getElementById('apiKeyInput').value.trim();
                     apiKey = val;
                     localStorage.setItem('GEMINI_API_KEY', val);
                     updateApiStatusUI();
@@ -558,7 +537,7 @@
 
             // Chat Events
             const chatForm = document.getElementById('chatForm');
-            const chatInput = document.getElementById('chatInput') as HTMLTextAreaElement;
+            const chatInput = document.getElementById('chatInput');
 
             if (chatForm && chatInput) {
                 chatForm.addEventListener('submit', async (e) => {
@@ -601,16 +580,16 @@
 
             // Image Upload Events
             const dropArea = document.getElementById('dropArea');
-            const imageInput = document.getElementById('imageInput') as HTMLInputElement;
+            const imageInput = document.getElementById('imageInput');
             const removeImgBtn = document.getElementById('removeImgBtn');
 
             if (dropArea && imageInput && removeImgBtn) {
                 dropArea.addEventListener('click', (e) => {
-                    if (!removeImgBtn.contains(e.target as Node)) imageInput.click();
+                    if (!removeImgBtn.contains(e.target)) imageInput.click();
                 });
 
                 imageInput.addEventListener('change', (e) => {
-                    const files = (e.target as HTMLInputElement).files;
+                    const files = e.target.files;
                     if (files && files[0]) processImageFile(files[0]);
                 });
 
@@ -641,19 +620,19 @@
             }
         }
 
-        function processImageFile(file: File) {
+        function processImageFile(file) {
             if (!file.type.startsWith('image/')) {
                 alert('画像ファイルを選択してください。');
                 return;
             }
             const reader = new FileReader();
             reader.onload = (e) => {
-                const result = e.target?.result as string;
+                const result = e.target?.result;
                 selectedBase64Image = {
                     mimeType: file.type,
                     data: result.split(',')[1]
                 };
-                const imgPreview = document.getElementById('imagePreview') as HTMLImageElement;
+                const imgPreview = document.getElementById('imagePreview');
                 if (imgPreview) imgPreview.src = result;
                 
                 const placeholder = document.getElementById('uploadPlaceholder');
@@ -665,7 +644,7 @@
         }
 
         // Gemini API Fetch helper
-        async function fetchGeminiAPI(payload: any): Promise<string> {
+        async function fetchGeminiAPI(payload) {
             if (!apiKey) {
                 const modal = document.getElementById('apiKeyModal');
                 if (modal) modal.classList.remove('hidden');
@@ -692,8 +671,8 @@
         }
 
         // Chat Handlers
-        async function handleSendMessage(userText: string) {
-            const sendBtn = document.getElementById('sendBtn') as HTMLButtonElement;
+        async function handleSendMessage(userText) {
+            const sendBtn = document.getElementById('sendBtn');
 
             appendMessageUI('user', userText);
             chatHistory.push({ role: 'user', parts: [{ text: userText }] });
@@ -713,7 +692,7 @@
                 loadingBubble.remove();
                 appendMessageUI('model', aiText);
 
-            } catch (err: any) {
+            } catch (err) {
                 loadingBubble.remove();
                 appendMessageUI('model', `⚠️ Error: ${err.message}`);
             } finally {
@@ -721,7 +700,7 @@
             }
         }
 
-        function appendMessageUI(role: 'user' | 'model', text: string) {
+        function appendMessageUI(role, text) {
             const chatMessages = document.getElementById('chatMessages');
             if (!chatMessages) return;
 
@@ -751,8 +730,8 @@
             
             // Render Math in appended bubble
             const msgNode = wrapper.querySelector('.markdown-body');
-            if (msgNode && (window as any).renderMathInElement) {
-                (window as any).renderMathInElement(msgNode, {
+            if (msgNode && window.renderMathInElement) {
+                window.renderMathInElement(msgNode, {
                     delimiters: [
                         {left: '$$', right: '$$', display: true},
                         {left: '$', right: '$', display: false}
@@ -764,8 +743,8 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        function appendLoadingUI(): HTMLElement {
-            const chatMessages = document.getElementById('chatMessages')!;
+        function appendLoadingUI() {
+            const chatMessages = document.getElementById('chatMessages');
             const wrapper = document.createElement('div');
             wrapper.className = 'flex items-start gap-3.5 max-w-3xl';
             wrapper.innerHTML = `
@@ -794,12 +773,12 @@
                 return;
             }
 
-            const contextNote = (document.getElementById('imageContextInput') as HTMLInputElement)?.value.trim() || '';
+            const contextNote = document.getElementById('imageContextInput')?.value.trim() || '';
             const emptyState = document.getElementById('outputEmptyState');
             const loadingState = document.getElementById('outputLoadingState');
             const resultContainer = document.getElementById('outputResultContainer');
             const resultMarkdown = document.getElementById('outputMarkdown');
-            const generateBtn = document.getElementById('generateProblemBtn') as HTMLButtonElement;
+            const generateBtn = document.getElementById('generateProblemBtn');
 
             if (emptyState) emptyState.classList.add('hidden');
             if (resultContainer) resultContainer.classList.add('hidden');
@@ -836,8 +815,8 @@ ${contextNote ? `生徒からの補足リクエスト：「${contextNote}」` : 
                     resultMarkdown.innerHTML = marked.parse(responseText);
                     
                     // KaTeX Math Rendering
-                    if ((window as any).renderMathInElement) {
-                        (window as any).renderMathInElement(resultMarkdown, {
+                    if (window.renderMathInElement) {
+                        window.renderMathInElement(resultMarkdown, {
                             delimiters: [
                                 {left: '$$', right: '$$', display: true},
                                 {left: '$', right: '$', display: false}
@@ -849,7 +828,7 @@ ${contextNote ? `生徒からの補足リクエスト：「${contextNote}」` : 
                 if (loadingState) loadingState.classList.add('hidden');
                 if (resultContainer) resultContainer.classList.remove('hidden');
 
-            } catch (err: any) {
+            } catch (err) {
                 if (loadingState) loadingState.classList.add('hidden');
                 if (emptyState) emptyState.classList.remove('hidden');
                 alert(`生成に失敗しました: ${err.message}`);
