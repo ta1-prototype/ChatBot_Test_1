@@ -215,47 +215,47 @@
                     <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/30">
                         <i data-lucide="bot" class="w-5 h-5"></i>
                     </div>
-                    <div class="glass-panel p-5 rounded-2xl rounded-tl-none border border-white/10 text-sm text-slate-200 leading-relaxed shadow-xl">
-                        <p class="font-bold mb-1.5 text-indigo-300 text-base">こんにちは！AI学習パートナーです 🚀</p>
-                        <p class="text-slate-300">「この数学の問題の途中式がわからない」「英語の文法関係代名詞をわかりやすく教えて」「明日世界史のテストなんだけど効果的な暗記法はある？」など、なんでも気軽に相談してくださいね！</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Chat Input Form -->
-            <div class="p-4 sm:p-5 bg-slate-950/60 border-t border-white/10 backdrop-blur-md">
-                <form id="chatForm" class="flex items-end gap-3 max-w-4xl mx-auto">
-                    <div class="relative flex-1">
-                        <textarea id="chatInput" rows="1" placeholder="質問を入力... (Shift+Enterで改行)" class="w-full resize-none pl-4 pr-10 py-3.5 bg-slate-900/90 border border-white/15 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/80 focus:border-indigo-500 text-sm text-slate-100 placeholder-slate-500 transition-all shadow-inner"></textarea>
-                    </div>
-                    <button type="submit" id="sendBtn" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 active:scale-95 text-white p-3.5 rounded-2xl font-medium transition-all shadow-lg shadow-indigo-600/30 disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
-                        <i data-lucide="send-horizontal" class="w-5 h-5"></i>
-                    </button>
-                </form>
-            </div>
-        </section>
-
-        <!-- TAB 2: Image Problem Generator -->
-        <section id="tab2Content" class="hidden flex-1 flex flex-col lg:flex-row gap-6">
-            <div class="w-full lg:w-5/12 flex flex-col gap-5">
-                <div class="glass-panel p-6 rounded-3xl border border-white/10 shadow-2xl flex flex-col gap-6">
+                    <!-- Subject Selection UI -->
                     <div>
-                        <div class="flex items-center gap-2 text-indigo-400 font-extrabold text-xs tracking-wider uppercase mb-1">
-                            <i data-lucide="zap" class="w-4 h-4"></i> Visual Learning Engine
-                        </div>
-                        <h2 class="text-lg font-bold text-white">日常画像 × 学問アプローチ</h2>
-                        <p class="text-xs text-slate-400 mt-1 leading-relaxed">
-                            写真の何気ない現象から高校教科の学びをディープ解析。演習問題と解説をAIがオリジナル自動作成します！
-                        </p>
-                    </div>
-
-                    <!-- Subject Selection Badges -->
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-3 flex items-center justify-between">
+                        <label for="subjectSelect" class="block text-xs font-bold text-slate-300 mb-2 flex items-center justify-between">
                             <span>1. 対象教科を選択</span>
-                            <span id="selectedSubjectBadge" class="text-indigo-400 font-extrabold text-xs">物理</span>
+                            <span id="selectedSubjectBadge" class="text-indigo-400 font-extrabold text-xs bg-indigo-500/10 px-2.5 py-1 rounded-md border border-indigo-500/20">物理</span>
                         </label>
-                        <div id="subjectGrid" class="grid grid-cols-4 gap-2"></div>
+                        <div class="relative">
+                            <select id="subjectSelect" class="w-full pl-4 pr-10 py-3 bg-slate-900/90 border border-indigo-500/30 hover:border-indigo-500/60 rounded-xl text-sm text-white font-bold appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/80 cursor-pointer shadow-lg transition-all">
+                                <optgroup label="── 理科 ──">
+                                    <option value="物理" selected>⚛️ 物理</option>
+                                    <option value="物理基礎">⚛️ 物理基礎</option>
+                                    <option value="化学">🧪 化学</option>
+                                    <option value="化学基礎">🧪 化学基礎</option>
+                                    <option value="生物">🧬 生物</option>
+                                    <option value="生物基礎">🧬 生物基礎</option>
+                                    <option value="地学">⛰️ 地学</option>
+                                    <option value="地学基礎">⛰️ 地学基礎</option>
+                                </optgroup>
+                                <optgroup label="── 数学 ──">
+                                    <option value="数学I・A">📐 数学I・A</option>
+                                    <option value="数学II・B">📐 数学II・B</option>
+                                    <option value="数学III・C">📐 数学III・C</option>
+                                </optgroup>
+                                <optgroup label="── 外国語 ──">
+                                    <option value="英語">🔤 英語</option>
+                                </optgroup>
+                                <optgroup label="── 国語 ──">
+                                    <option value="現代文">📖 現代文</option>
+                                    <option value="言語文化・古典">📜 言語文化・古典</option>
+                                </optgroup>
+                                <optgroup label="── 地歴公民 ──">
+                                    <option value="日本史">⛩️ 日本史</option>
+                                    <option value="世界史">🌍 世界史</option>
+                                    <option value="地理">🗺️ 地理</option>
+                                    <option value="公共・政治経済">⚖️ 公共・政治経済</option>
+                                </optgroup>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-indigo-400">
+                                <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Image Upload Dropzone -->
@@ -336,59 +336,11 @@
 
     <!-- Frontend Script Logic -->
     <script type="text/babel" data-presets="typescript">
-        // 高校の新学習指導要領カリキュラムに沿った詳細科目リスト
-        const SUBJECT_CATEGORIES = [
-            {
-                category: '理科',
-                subjects: [
-                    { id: '物理基礎', name: '物理基礎', icon: 'atom' },
-                    { id: '物理', name: '物理', icon: 'atom' },
-                    { id: '化学基礎', name: '化学基礎', icon: 'flask-conical' },
-                    { id: '化学', name: '化学', icon: 'flask-conical' },
-                    { id: '生物基礎', name: '生物基礎', icon: 'dna' },
-                    { id: '生物', name: '生物', icon: 'dna' },
-                    { id: '地学基礎', name: '地学基礎', icon: 'mountain' },
-                    { id: '地学', name: '地学', icon: 'mountain' },
-                ]
-            },
-            {
-                category: '数学',
-                subjects: [
-                    { id: '数学I・A', name: '数学I・A', icon: 'calculator' },
-                    { id: '数学II・B', name: '数学II・B', icon: 'calculator' },
-                    { id: '数学III・C', name: '数学III・C', icon: 'calculator' },
-                ]
-            },
-            {
-                category: '外国語',
-                subjects: [
-                    { id: '英語コミュニケーション', name: '英語', icon: 'languages' },
-                ]
-            },
-            {
-                category: '国語',
-                subjects: [
-                    { id: '現代文', name: '現代文', icon: 'book-open' },
-                    { id: '言語文化・古典', name: '古典', icon: 'scroll' },
-                ]
-            },
-            {
-                category: '地歴公民',
-                subjects: [
-                    { id: '歴史総合・日本史', name: '日本史', icon: 'landmark' },
-                    { id: '歴史総合・世界史', name: '世界史', icon: 'globe-2' },
-                    { id: '地理総合・探究', name: '地理', icon: 'map' },
-                    { id: '公共・政治経済', name: '公共・政経', icon: 'scale' },
-                ]
-            }
-        ];
-
         let chatHistory = [];
         let selectedSubject = '物理';
         let selectedBase64Image = null;
 
         document.addEventListener('DOMContentLoaded', () => {
-            renderSubjectBadges();
             setupEventListeners();
             lucide.createIcons();
         });
@@ -398,49 +350,16 @@
             lucide.createIcons();
         });
 
-        function renderSubjectBadges() {
-            const container = document.getElementById('subjectGrid');
-            if (!container) return;
-
-            let html = '';
-            SUBJECT_CATEGORIES.forEach(cat => {
-                html += `
-                    <div class="col-span-full mt-2 first:mt-0">
-                        <span class="text-[10px] font-bold text-indigo-400 tracking-wider uppercase">${cat.category}</span>
-                    </div>
-                `;
-                cat.subjects.forEach(subj => {
-                    const isSelected = subj.id === selectedSubject;
-                    const activeStyle = isSelected 
-                        ? 'ring-2 ring-indigo-500 bg-indigo-600/40 text-white font-extrabold border-indigo-400 shadow-md shadow-indigo-500/20' 
-                        : 'bg-slate-900/40 text-slate-400 border-white/5 hover:border-white/20 hover:text-slate-200';
-
-                    html += `
-                        <button type="button" data-subject="${subj.id}" class="subject-btn flex flex-col items-center justify-center p-2 rounded-xl border ${activeStyle} transition-all duration-200 text-xs">
-                            <i data-lucide="${subj.icon}" class="w-3.5 h-3.5 mb-1 ${isSelected ? 'text-indigo-300' : 'text-slate-400'}"></i>
-                            <span class="text-[11px] leading-tight truncate w-full text-center">${subj.name}</span>
-                        </button>
-                    `;
-                });
-            });
-
-            container.innerHTML = html;
-
-            document.querySelectorAll('.subject-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const target = e.currentTarget.getAttribute('data-subject');
-                    if (target) {
-                        selectedSubject = target;
-                        const badgeNode = document.getElementById('selectedSubjectBadge');
-                        if (badgeNode) badgeNode.innerText = selectedSubject;
-                        renderSubjectBadges();
-                        lucide.createIcons();
-                    }
-                });
-            });
-        }
-
         function setupEventListeners() {
+            const subjectSelect = document.getElementById('subjectSelect');
+            if (subjectSelect) {
+                subjectSelect.addEventListener('change', (e) => {
+                    selectedSubject = e.target.value;
+                    const badgeNode = document.getElementById('selectedSubjectBadge');
+                    if (badgeNode) badgeNode.innerText = selectedSubject;
+                });
+            }
+
             const tab1Btn = document.getElementById('tab1Btn');
             const tab2Btn = document.getElementById('tab2Btn');
             const tab1Content = document.getElementById('tab1Content');
@@ -734,3 +653,4 @@
         }
     </script>
 </body>
+</html>
