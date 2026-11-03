@@ -8,21 +8,43 @@ export async function onRequestPost(context) {
             (contextNote ? `補足リクエスト: ${contextNote}\n` : '') +
             `添付された画像をもとに、高校生の${subject}の観点から深掘りした学問的解説を行い、その現象に関連する【高校生レベルのオリジナル演習問題】とその【詳しい解答・解説】を作成してください。LaTeX記法（$や$$）を使用して数式を美しく記述してください。`;
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${env.GEMINI_API_KEY}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{
-                    role: "user",
-                    parts: [
-                        { text: prompt },
-                        { inlineData: { mimeType: image.mimeType, data: image.data } }
-                    ]
-                }]
-            })
-        });
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${env.GEMINI_API_KEY}`;
+        const payload = {
+            contents: [{
+                role: "user",
+                parts: [
+                    { text: prompt },
+                    { inlineData: { mimeType: image.mimeType, data: image.data } }
+                ]
+            }]
+        };
 
-        const data = await response.json();
+        // 一時的な混雑に対応するためのリトライ処理（最大3回）
+        let response;
+        let data;
+        let attempts = 0;
+        const maxAttempts = 3;
+
+        while (attempts < maxAttempts) {
+            attempts++;
+            response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            data = await response.json();
+
+            // 成功、またはリトライ対象外のエラーならループを抜ける
+            if (response.ok || (data.error && !data.error.message.includes('high demand') && response.status !== 503 && response.status !== 429)) {
+                break;
+            }
+
+            // 混雑エラーの場合は1.5〜3秒待機して再試行
+            if (attempts < maxAttempts) {
+                await new Promise(resolve => setTimeout(resolve, attempts * 1500));
+            }
+        }
 
         if (data.error) {
             return new Response(JSON.stringify({ error: data.error.message }), {
