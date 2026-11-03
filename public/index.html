@@ -1,86 +1,95 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101114">
+  <meta name="theme-color" content="#0d0e12">
   <meta name="description" content="Gemini AI Chat Studio">
   <title>Gemini Chat Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
   <div id="app">
+    <!-- サイドバー -->
     <aside class="sidebar">
       <div class="brand">
-        <span class="brand-icon">✦</span>
-        Gemini Studio
+        <div class="brand-logo">✦</div>
+        <div class="brand-text">
+          <span class="brand-title">Gemini Studio</span>
+          <span class="brand-sub">AI Assistant</span>
+        </div>
       </div>
 
       <button id="new-chat" class="new-chat">
-        ＋ 新しいチャット
+        <span class="btn-icon">＋</span> 新しいチャット
       </button>
 
       <div class="side-label">CURRENT SESSION</div>
-      <div class="session-info">現在の会話</div>
+      <div class="session-info">
+        <span class="session-icon">💬</span>
+        <span class="session-text">現在の会話</span>
+      </div>
 
       <div class="sidebar-bottom">
-        <span>Powered by Gemini API</span>
-        <span>Cloudflare Workers</span>
+        <div class="tech-tag">Powered by <strong>Gemini API</strong></div>
+        <div class="tech-tag">Cloudflare Workers</div>
       </div>
     </aside>
 
+    <!-- メイン領域 -->
     <main class="main">
       <header class="header">
-        <button id="mobile-menu" aria-label="メニュー">☰</button>
-        <div>
-          <div class="header-title">Gemini Chat</div>
-          <div class="status">
-            <span class="status-dot"></span>
-            AI Assistant
+        <div class="header-left">
+          <button id="mobile-menu" aria-label="メニュー">☰</button>
+          <div>
+            <div class="header-title">Gemini Chat</div>
+            <div class="status">
+              <span class="status-dot"></span>
+              オンライン
+            </div>
           </div>
         </div>
-        <button id="clear-chat" class="clear-button">
-          会話をクリア
-        </button>
+        
+        <div class="header-right">
+          <span class="model-badge">gemini-3.5-flash</span>
+          <button id="clear-chat" class="clear-button">
+            会話をクリア
+          </button>
+        </div>
       </header>
 
       <section id="messages" class="messages">
-        <div class="welcome">
-          <div class="welcome-icon">✦</div>
-          <h1>何でも聞いてください。</h1>
-          <p>あなたの思考をサポートするAIアシスタントです。</p>
-
-          <div class="suggestions">
-            <button class="suggestion">
-              プログラミングについて教えて
-            </button>
-            <button class="suggestion">
-              新しいアイデアを考えて
-            </button>
-            <button class="suggestion">
-              今日のタスクを整理したい
-            </button>
-          </div>
-        </div>
+        <!-- JSで初期ウェルカム画面または会話文が注入されます -->
       </section>
 
       <div id="error" class="error"></div>
 
-      <form id="chat-form" class="composer">
-        <textarea
-          id="user-input"
-          placeholder="メッセージを入力..."
-          rows="1"
-          maxlength="20000"
-        ></textarea>
-        <div class="composer-footer">
-          <span>Enterで送信 / Shift + Enterで改行</span>
-          <button id="send-button" type="submit">↑</button>
+      <!-- 入力エリア -->
+      <form id="chat-form" class="composer-container">
+        <div class="composer">
+          <textarea
+            id="user-input"
+            placeholder="メッセージを入力... (Shift+Enterで改行)"
+            rows="1"
+            maxlength="20000"
+          ></textarea>
+          <div class="composer-footer">
+            <span class="hint">Enterで送信 / Shift + Enterで改行</span>
+            <button id="send-button" type="submit" aria-label="送信">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
+              </svg>
+            </button>
+          </div>
         </div>
       </form>
 
       <div class="disclaimer">
-        AIの回答は必ずしも正確とは限りません。
+        Gemini may display inaccurate info, including about people, so double-check its responses.
       </div>
     </main>
   </div>
