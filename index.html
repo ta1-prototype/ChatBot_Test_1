@@ -190,7 +190,7 @@
     <!-- Main Content Area -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full flex flex-col z-10">
 
-        <!-- TAB 1: Chat Tutor -->
+        <!-- TAB 1: Clean Chat Tutor -->
         <section id="tab1Content" class="flex-1 flex flex-col glass-panel rounded-3xl border border-white/10 shadow-2xl overflow-hidden h-[74vh]">
             <div class="px-6 py-3.5 bg-slate-900/80 border-b border-white/10 flex items-center justify-between">
                 <div class="flex items-center gap-3">
@@ -215,14 +215,49 @@
                     <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/30">
                         <i data-lucide="bot" class="w-5 h-5"></i>
                     </div>
-                    <!-- Subject Selection UI -->
-                    <div>
+                    <div class="glass-panel p-5 rounded-2xl rounded-tl-none border border-white/10 text-sm text-slate-200 leading-relaxed shadow-xl">
+                        <p class="font-bold mb-1 text-indigo-300">こんにちは！勉強アシスタントのAIチューターです！👋</p>
+                        <p class="text-slate-300">数学・理科の解き方から、英語の長文、歴史の暗記方法まで何でも聞いてね！質問を入力して会話をスタートしよう！</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input Area -->
+            <div class="p-4 sm:p-5 bg-slate-950/60 border-t border-white/10">
+                <form id="chatForm" class="flex items-center gap-3">
+                    <div class="relative flex-1">
+                        <input type="text" id="chatInput" placeholder="質問や分からない問題について入力してね (Shift+Enterで改行)..." class="w-full px-5 py-3.5 bg-slate-900/90 border border-white/10 rounded-2xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/80 transition-all shadow-inner">
+                    </div>
+                    <button type="submit" id="sendBtn" class="px-6 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm rounded-2xl transition-all duration-300 shadow-lg shadow-indigo-600/30 flex items-center gap-2 shrink-0 active:scale-95 disabled:opacity-50">
+                        <span>送信</span>
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- TAB 2: Visual Learning Engine (Image to Problem Generator) -->
+        <section id="tab2Content" class="hidden flex-1 flex flex-col lg:flex-row gap-6 min-h-[74vh]">
+            <!-- Input Side Container -->
+            <div class="w-full lg:w-5/12 glass-panel p-6 sm:p-8 rounded-3xl border border-white/10 shadow-2xl flex flex-col justify-between space-y-6">
+                <div>
+                    <div class="flex items-center gap-2 text-xs font-extrabold text-indigo-400 tracking-wider uppercase mb-2">
+                        <i data-lucide="zap" class="w-4 h-4"></i>
+                        <span>Visual Learning Engine</span>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight mb-2">日常画像 × 学問アプローチ</h2>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-6">
+                        写真の何気ない現象から高校教科の学びをディープ解析。演習問題と解説をAIがオリジナル自動作成します！
+                    </p>
+
+                    <!-- Subject Selection UI Dropdown -->
+                    <div class="mb-5">
                         <label for="subjectSelect" class="block text-xs font-bold text-slate-300 mb-2 flex items-center justify-between">
                             <span>1. 対象教科を選択</span>
                             <span id="selectedSubjectBadge" class="text-indigo-400 font-extrabold text-xs bg-indigo-500/10 px-2.5 py-1 rounded-md border border-indigo-500/20">物理</span>
                         </label>
                         <div class="relative">
-                            <select id="subjectSelect" class="w-full pl-4 pr-10 py-3 bg-slate-900/90 border border-indigo-500/30 hover:border-indigo-500/60 rounded-xl text-sm text-white font-bold appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/80 cursor-pointer shadow-lg transition-all">
+                            <select id="subjectSelect" class="w-full pl-4 pr-10 py-3.5 bg-slate-900/90 border border-indigo-500/30 hover:border-indigo-500/60 rounded-xl text-sm text-white font-bold appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/80 cursor-pointer shadow-lg transition-all">
                                 <optgroup label="── 理科 ──">
                                     <option value="物理" selected>⚛️ 物理</option>
                                     <option value="物理基礎">⚛️ 物理基礎</option>
@@ -259,7 +294,7 @@
                     </div>
 
                     <!-- Image Upload Dropzone -->
-                    <div>
+                    <div class="mb-5">
                         <label class="block text-xs font-bold text-slate-300 mb-2">2. 画像をアップロード</label>
                         <div id="dropArea" class="border-2 border-dashed border-white/15 hover:border-indigo-500/60 bg-slate-900/40 hover:bg-slate-900/80 rounded-2xl p-6 text-center cursor-pointer transition-all duration-300 flex flex-col items-center justify-center min-h-[190px] group">
                             <input type="file" id="imageInput" accept="image/*" class="hidden">
@@ -288,13 +323,13 @@
                         <label class="block text-xs font-bold text-slate-300 mb-1.5">3. 補足リクエスト（任意）</label>
                         <input type="text" id="imageContextInput" placeholder="例: 「球の物体の軌跡に注目して難しめの問題にして」" class="w-full px-4 py-2.5 bg-slate-900/80 border border-white/10 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/80 placeholder-slate-500">
                     </div>
-
-                    <!-- Generate Button -->
-                    <button id="generateProblemBtn" class="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-extrabold text-sm rounded-2xl transition-all duration-300 shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2.5 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed">
-                        <i data-lucide="sparkles" class="w-4 h-4"></i>
-                        <span>AI解説 & オリジナル問題を生成</span>
-                    </button>
                 </div>
+
+                <!-- Generate Button -->
+                <button id="generateProblemBtn" class="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-extrabold text-sm rounded-2xl transition-all duration-300 shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2.5 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span>AI解説 & オリジナル問題を生成</span>
+                </button>
             </div>
 
             <!-- Output Side Container -->
