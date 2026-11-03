@@ -180,13 +180,12 @@
                 </div>
             </div>
 
-            <!-- API Key & Settings Status -->
+            <!-- Server Status Badge (Frontend API Key input removed) -->
             <div class="flex items-center gap-3">
-                <button id="apiKeyBtn" class="flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 transition-all duration-200 backdrop-blur-md shadow-sm hover:border-indigo-500/40">
-                    <span id="apiStatusDot" class="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span>
-                    <span id="apiStatusText" class="hidden sm:inline">APIキー設定</span>
-                    <i data-lucide="key" class="w-3.5 h-3.5 text-slate-400"></i>
-                </button>
+                <div class="flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-slate-200 backdrop-blur-md">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
+                    <span class="hidden sm:inline">Cloudflare backend integration ready</span>
+                </div>
             </div>
         </div>
     </header>
@@ -360,48 +359,7 @@
 
     </main>
 
-    <!-- Modal: API Key Config -->
-    <div id="apiKeyModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="glass-panel rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-white/15 animate-float">
-            <div class="flex items-center justify-between mb-5">
-                <h3 class="font-bold text-white text-lg flex items-center gap-2.5">
-                    <div class="p-2 bg-indigo-500/20 rounded-xl text-indigo-400">
-                        <i data-lucide="key-round" class="w-5 h-5"></i>
-                    </div>
-                    APIキーの設定
-                </h3>
-                <button id="closeModalBtn" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-
-            <p class="text-xs text-slate-300 leading-relaxed mb-5">
-                Google AI Studioで取得したAPIキーを入力してください。<br>
-                ※Cloudflare等にデプロイ時は環境変数名 <code class="bg-indigo-950/80 text-indigo-300 font-mono px-1.5 py-0.5 rounded border border-indigo-500/30">GEMINI_API_KEY</code> としても連携可能です。
-            </p>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1.5">Gemini API Key</label>
-                    <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full px-4 py-3 bg-slate-900/90 border border-white/15 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-slate-100 placeholder-slate-600">
-                </div>
-
-                <div class="p-3.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-xs text-indigo-200 flex items-start gap-2.5">
-                    <i data-lucide="info" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5"></i>
-                    <div>
-                        <p class="font-bold mb-0.5">メインモデル</p>
-                        <p class="text-[11px] text-indigo-300/80"><code class="font-semibold text-indigo-200">gemini-3.5-flash</code> を自動使用します。</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-6 flex gap-3">
-                <button id="saveApiKeyBtn" class="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm rounded-xl transition shadow-lg shadow-indigo-600/30">
-                    保存して適用
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- Modal removed since API Key is handled by Cloudflare env variable GEMINI_API_KEY -->
 
     <!-- TypeScript logic via Babel with TypeScript preset -->
     <script type="text/babel" data-presets="typescript">
@@ -418,41 +376,13 @@
         ];
 
         // Global State
-        let apiKey = localStorage.getItem('GEMINI_API_KEY') || '';
         let chatHistory = [];
         let selectedSubject = '物理';
         let selectedBase64Image = null;
 
-        const SYSTEM_INSTRUCTION_CHAT = `
-あなたは熱心で優しく褒め上手な、現役トップ講師クラスの高校生専用AI学習チューターです。
-対象生徒：高校生（全教科・定期テスト・共通テスト・受験対策）。
-
-応答スタンス：
-1. 親しみやすく前向きな情熱的口調（「〜だよ！」「素晴らしい点に着目したね！」など）。
-2. 概念や解法は途中のステップを省略せず、視覚的・論理的に分かりやすく解説してください。
-3. 数式や公式を記載する場合は、KaTeX形式 ($ ... $ や $$ ... $$) を積極的に利用してください。
-`;
-
-        const SYSTEM_INSTRUCTION_VISION = `
-あなたは日常のあらゆるシーンから学問の面白さを引き出し、高校生向けの学びと演習問題へ変換するエキスパート講師です。
-提示された画像と指定教科について、以下の構成でわかりやすく出力してください。
-
-数式を書く場合は必ず $ E = mc^2 $ のような LaTeX (KaTeX) 形式を用いてください。
-
-### 🔍 学問的解説
-- 画像内の現象やオブジェクトを、指定教科の視点から楽しく深掘りして解説してください（高校教科書に出てくるキーワードや公式を盛り込む）。
-
-### 📝 オリジナル演習問題（1問）
-- この画像シチュエーションをテーマにした高校生レベルの演習問題を作成してください。
-
-### 💡 解答プロセスとポイント
-- 解答の解説ステップを丁寧に記述し、解く上での注意点・コツを添えてください。
-`;
-
         // Initialize UI
         document.addEventListener('DOMContentLoaded', () => {
             renderSubjectBadges();
-            updateApiStatusUI();
             setupEventListeners();
             lucide.createIcons();
         });
@@ -494,46 +424,7 @@
             });
         }
 
-        function updateApiStatusUI() {
-            const statusDot = document.getElementById('apiStatusDot');
-            const statusText = document.getElementById('apiStatusText');
-            if (!statusDot || !statusText) return;
-
-            if (apiKey) {
-                statusDot.className = 'w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]';
-                statusText.innerText = 'APIキー連携完了';
-            } else {
-                statusDot.className = 'w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]';
-                statusText.innerText = 'APIキー未設定';
-            }
-        }
-
         function setupEventListeners() {
-            // Modal Events
-            const modal = document.getElementById('apiKeyModal');
-            const apiKeyBtn = document.getElementById('apiKeyBtn');
-            const closeModalBtn = document.getElementById('closeModalBtn');
-            const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
-
-            if (apiKeyBtn && modal) {
-                apiKeyBtn.addEventListener('click', () => {
-                    document.getElementById('apiKeyInput').value = apiKey;
-                    modal.classList.remove('hidden');
-                });
-            }
-            if (closeModalBtn && modal) {
-                closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
-            }
-            if (saveApiKeyBtn && modal) {
-                saveApiKeyBtn.addEventListener('click', () => {
-                    const val = document.getElementById('apiKeyInput').value.trim();
-                    apiKey = val;
-                    localStorage.setItem('GEMINI_API_KEY', val);
-                    updateApiStatusUI();
-                    modal.classList.add('hidden');
-                });
-            }
-
             // Tab Switching
             const tab1Btn = document.getElementById('tab1Btn');
             const tab2Btn = document.getElementById('tab2Btn');
@@ -664,43 +555,9 @@
             reader.readAsDataURL(file);
         }
 
-        // Gemini API Fetch helper
-        async function fetchGeminiAPI(payload) {
-            if (!apiKey) {
-                const modal = document.getElementById('apiKeyModal');
-                if (modal) modal.classList.remove('hidden');
-                throw new Error('APIキーが指定されていません。設定画面からキーを入力してください。');
-            }
-
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
-
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.error?.message || `API Error (${response.status})`);
-            }
-
-            const data = await response.json();
-            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (!text) throw new Error('AIの応答メッセージが空です。');
-            return text;
-        }
-
         // Chat Handlers
         async function handleSendMessage(userText) {
             const sendBtn = document.getElementById('sendBtn');
-
-            if (!apiKey) {
-                const modal = document.getElementById('apiKeyModal');
-                if (modal) modal.classList.remove('hidden');
-                alert('Gemini APIキーを入力してください（右上の「APIキー設定」からも登録できます）。');
-                return;
-            }
 
             appendMessageUI('user', userText);
             chatHistory.push({ role: 'user', parts: [{ text: userText }] });
@@ -709,14 +566,22 @@
             const loadingBubble = appendLoadingUI();
 
             try {
-                const payload = {
-                    contents: chatHistory,
-                    systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION_CHAT }] }
-                };
+                // Fetch request sent to backend proxy (Cloudflare Functions / Worker)
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: chatHistory })
+                });
 
-                const aiText = await fetchGeminiAPI(payload);
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.error || `エラー (${response.status})`);
+                }
+
+                const data = await response.json();
+                const aiText = data.text;
+
                 chatHistory.push({ role: 'model', parts: [{ text: aiText }] });
-
                 loadingBubble.remove();
                 appendMessageUI('model', aiText);
 
@@ -813,31 +678,25 @@
             if (loadingState) loadingState.classList.remove('hidden');
             if (generateBtn) generateBtn.disabled = true;
 
-            const promptText = `
-選択教科：【${selectedSubject}】
-${contextNote ? `生徒からの補足リクエスト：「${contextNote}」` : ''}
-
-画像を分析し、学問的アプローチ、オリジナル演習問題、丁寧な解答プロセスの3項目を作成してください。
-`;
-
             try {
-                const payload = {
-                    contents: [{
-                        role: 'user',
-                        parts: [
-                            { text: promptText },
-                            {
-                                inlineData: {
-                                    mimeType: selectedBase64Image.mimeType,
-                                    data: selectedBase64Image.data
-                                }
-                            }
-                        ]
-                    }],
-                    systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION_VISION }] }
-                };
+                // Fetch request sent to backend proxy (Cloudflare Functions / Worker)
+                const response = await fetch('/api/generate-problem', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        subject: selectedSubject,
+                        contextNote: contextNote,
+                        image: selectedBase64Image
+                    })
+                });
 
-                const responseText = await fetchGeminiAPI(payload);
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.error || `エラー (${response.status})`);
+                }
+
+                const data = await response.json();
+                const responseText = data.text;
 
                 if (resultMarkdown) {
                     resultMarkdown.innerHTML = marked.parse(responseText);
