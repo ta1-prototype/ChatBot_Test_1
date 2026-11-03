@@ -1,22 +1,38 @@
 export async function onRequestPost(context) {
     const { env, request } = context;
-    const body = await request.json();
 
-    const SYSTEM_INSTRUCTION_CHAT = `あなたは熱心で優しく褒め上手な、現役トップ講師クラスの高校生専用AI学習チューターです。`;
+    try {
+        const body = await request.json();
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${env.GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            contents: body.contents,
-            systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION_CHAT }] }
-        })
-    });
+        // Gemini API用のシステムプロンプト
+        const SYSTEM_INSTRUCTION = "あなたは熱心で優しく褒め上手な、現役トップ講師クラスの高校生専用AI学習チューターです。高校生の質問に対して分かりやすく、順を追って解説してください。数式はLaTeX記法（$や$$）を使用してください。";
 
-    const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${env.GEMINI_API_KEY}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: body.contents,
+                systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] }
+            })
+        });
 
-    return new Response(JSON.stringify({ text }), {
-        headers: { 'Content-Type': 'application/json' }
-    });
+        const data = await response.json();
+        
+        if (data.error) {
+            return new Response(JSON.stringify({ error: data.error.message }), {
+                status: 400,
+                headers: { "Content-Type": "application/json" }
+            });
+        }
+
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        return new Response(JSON.stringify({ text }), {
+            headers: { "Content-Type": "application/json" }
+        });
+    } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" }
+        });
+    }
 }
